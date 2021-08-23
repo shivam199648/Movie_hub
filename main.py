@@ -97,7 +97,7 @@ def n_movies():
       cursor.execute('CREATE TABLE IF NOT EXISTS movies(movie_id BIGINT,theater_id bigint,movie_name varchar(30),theater_name varchar(30),seats bigint,booked_seats varchar(200),timings varchar(45),genre varchar(20),duration bigint,cost bigint,active_ind varchar(1), PRIMARY KEY(movie_id))')
       database.commit()
       cursor.execute(f"update movies set active_ind='0' where theater_id={session['id']}")
-      cursor.execute("select coalesce(max(user_id),0) from movies")
+      cursor.execute("select coalesce(max(movie_id),0) from movies")
       movie_id=cursor.fetchone()[0]
       for values in timings:
           movie_id=movie_id+1
@@ -327,7 +327,7 @@ def user_dashboard():
          movie_id=movie_theater[0]
          theater_id=movie_theater[1]
          cursor.execute(f"Create table if not exists bookings(booking_id BIGINT,user_id BIGINT,theater_id bigint,movie_id bigint,seats_booked bigint,total_cost bigint,movie_schedule datetime,booking_time datetime default CURRENT_TIMESTAMP,PRIMARY KEY(booking_id))")
-         cursor.execute("select coalesce(max(user_id),0) from bookings")
+         cursor.execute("select coalesce(max(booking_id),0) from bookings")
          booking_id=cursor.fetchone()[0]
          booking_id=booking_id+1
          cursor.execute(f"Insert into bookings(booking_id,user_id,theater_id,movie_id,seats_booked,total_cost,movie_schedule) values ({booking_id},{user_id},{theater_id},{movie_id},{selected_seats},{total_cost},'{timings}')")
