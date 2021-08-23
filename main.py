@@ -8,7 +8,7 @@ from datetime import datetime as dt
 
 app = Flask(__name__)
 database=sqlite3.connect('movie_finder.db')
-cursor=database.cursor(buffered=True)
+
 app.secret_key = 'my_secret'
 
 @app.route("/")
