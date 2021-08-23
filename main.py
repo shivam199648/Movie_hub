@@ -189,7 +189,7 @@ def home():
           else:
              cursor.execute('CREATE TABLE IF NOT EXISTS movies(movie_id BIGINT ,theater_id bigint,movie_name varchar(30),theater_name varchar(30),seats bigint,booked_seats varchar(200),timings varchar(45),genre varchar(20),duration bigint,cost bigint,active_ind varchar(1), PRIMARY KEY(movie_id))')
              database.commit()
-             cursor.execute(f'''select * from (select cast(movie_id as char) as movie_id,movie_name,timings,cast(current_date ||' '||timings) as datetime) as sp ,theater_name
+             cursor.execute(f'''select * from (select cast(movie_id as char) as movie_id,movie_name,timings,cast(current_date ||' '||timings as datetime) as sp,theater_name
              from  movies where active_ind='1' and theater_id in (select user_id from user where city in 
               (select city from user where user_id={user_id}) and user_type='Theater'))s''')
              movie_list=cursor.fetchall()
