@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+
+     
+{% block title %}Add_Movies{% endblock %}
+
+{% block content %}
+ 
+    <div class="login">
+			<h1>Register</h1>
+			<div class="links">
+				<a href="/Add movies" class="active">Add Movies</a>
+                <a href="/theater_dashboard" >Dashboard</a>
+
+			</div>
+			<form action="/movies" method="post" autocomplete="off">
+				<label for="movie Name">
+					<i class="fas fa-user"></i>
+				</label>
+				<input type="text" name="movie_name" placeholder="Movie_name" id="movie_name" required>
+				<label for="Theater Name">
+					<i class="fas fa-user"></i>
+				</label>
+				<input type="text" name="theater_name" placeholder="Theater Name" id="theater_name" value='{{account[2]}}' required>
+				<label for="Number of Seats">
+					<i class="fas fa-envelope"></i>
+				</label>
+				<input type="text" name="seats" placeholder="Number of Seats" id="seats" required>
+				
+               <label for="timings"></label>
+               <input type="text" name="timings" placeholder="Timings(comma seperated)" id="timings" required>
+ 				
+               <label for="Genre"></label>
+               <input type="text" name="genre" placeholder="Genre" id="genre" required>
+               <label for="Duration"></label>
+               <input type="text" name="duration" placeholder="duration" id="duration" required>
+               <label for="Cost Per Ticket"></label>
+               <input type="text" name="cost" placeholder="Cost in Rupees" id="cost" required>
+				
+
+			   <input type="submit" value="register_movies">
+
+        
+			</form>
+		</div>
+{% endblock %}
