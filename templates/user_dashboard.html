@@ -1,0 +1,96 @@
+{% extends 'layout.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<h2>Your Bookings</h2>
+
+
+<div>
+    <input type="hidden" name='{{booking_id}}' id="booking"  value='{{booking_id}}'  required ><br>
+    <input type="hidden" name='{{movie_name}}'  id="movie"  value='{{movie_name}}'  required ><br>
+    <input type="hidden" name='{{theater_name}}'  id="theater"  value='{{theater_name}}'  required ><br>
+    <input type="hidden" name='{{movie_schedule}}' id="schedule"  value='{{movie_schedule}}'  required ><br>
+    <input type="hidden" name='{{seats_booked}}'  id="seats"  value='{{seats_booked}}'  required ><br>
+    <input type="hidden" name='{{total_cost}}' id="cost"  value='{{total_cost}}'  required ><br>
+    <input type="hidden" name='{{current_time}}' id="time"  value='{{current_time}}'  required ><br>
+    <p>Upcoming Bookings</p>
+    <input type="button" id="add" value="Show Bookings" onclick="addRow()">
+    <table id="current" >
+        <tr>
+            <td><b>Booking Id</b></td>
+            <td><b>Movie Name</b></td>
+            <td><b>Theater Name</b></td>
+            <td><b>Movie Schedule</b></td>
+            <td><b>Seats Booked</b></td>
+            <td><b>Total Cost</b></td>
+        </tr>
+    </table>
+</div>
+<div>
+<p>Previous Bookings</p>
+    
+    <table id="Previous" >
+        <tr>
+            <td><b>Booking Id</b></td>
+            <td><b>Movie Name</b></td>
+            <td><b>Theater Name</b></td>
+            <td><b>Movie Schedule</b></td>
+            <td><b>Seats Booked</b></td>
+            <td><b>Total Cost</b></td>
+        </tr>
+    </table>
+
+    <script>
+        var booking_list=document.getElementById("booking").getAttribute("name");
+        var movie_list=document.getElementById("movie").getAttribute("name");
+        var theater_list=document.getElementById("theater").getAttribute("name");
+        var schedule_list=document.getElementById("schedule").getAttribute("name");
+        var seats_list=document.getElementById("seats").getAttribute("name");
+        var cost_list=document.getElementById("cost").getAttribute("name");
+        var time=document.getElementById("time").getAttribute("name")
+
+        const booking_arr=booking_list.split(",")
+        const movie_arr=movie_list.split(",")
+        const theater_arr=theater_list.split(",")
+        const schedule_arr=schedule_list.split(",")
+        const seats_arr=seats_list.split(",")
+        const cost_arr=cost_list.split(",")
+
+
+        function addRow()
+        {
+           var table_cur=document.getElementById("current")
+           var table_pre=document.getElementById("Previous")
+          
+           for (var i=0;i<booking_arr.length;i++)
+           { 
+               if(schedule_arr[i]>time)
+               {
+                 var rowCount=table_cur.rows.length
+                 var row=table_cur.insertRow(rowCount)
+                 row.insertCell(0).innerHTML=booking_arr[i]
+                 row.insertCell(1).innerHTML=movie_arr[i]
+                 row.insertCell(2).innerHTML=theater_arr[i]
+                 row.insertCell(3).innerHTML=schedule_arr[i]
+                 row.insertCell(4).innerHTML=seats_arr[i]
+                 row.insertCell(5).innerHTML=cost_arr[i]
+
+               }
+               else
+               { 
+                 var rowCount=table_pre.rows.length
+                 var row=table_pre.insertRow(rowCount)
+                 row.insertCell(0).innerHTML=booking_arr[i]
+                 row.insertCell(1).innerHTML=movie_arr[i]
+                 row.insertCell(2).innerHTML=theater_arr[i]
+                 row.insertCell(3).innerHTML=schedule_arr[i]
+                 row.insertCell(4).innerHTML=seats_arr[i]
+                 row.insertCell(5).innerHTML=cost_arr[i]
+               }
+           }
+        }
+    </script>
+</div>
+
+{% endblock %}

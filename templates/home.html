@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>{% block title %}{% endblock %}</title>
+		<link href="../static/signup.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">  
+        <script>
+            var myvar='{{movies}}'
+        </script>
+        <script src="../static/js/JQuery.js"></script>
+	</head>
+	<body class="loggedin">
+		<nav class="navtop">
+			<div>
+				<h1>Website Title</h1>
+                <a href="/home"><i class="fas fa-home"></i>Home</a>
+				<a href="/profile"><i class="fas fa-user-circle"></i>Profile</a>
+				<a href="/logout"><i class="fas fa-sign-out-alt"></i>Logout</a>
+                
+			</div>
+		</nav>
+		<div class="content">
+<h2>Home Page</h2>
+<p>Welcome back, {{ username }}!</p>
+
+<div class="login">
+    <h1>Register</h1>
+    <div class="links">
+        <a href="/home" class="active">Find Shows</a>
+        <a href="/user_dashboard" >Dashboard</a>
+       
+    </div>
+
+
+    <form action="/Find_Shows" method="post" autocomplete="off">
+        
+        <input type="hidden" name='{{movies}}' placeholder="Username" id="movie_l"  value='{{movies}}'  required >
+        <label for="movie Name">
+        </label>
+        <select id="Movies" onclick="ad_movie_list()" name="Movies">
+        <option hidden=""> Select Movie</option></select>
+
+
+        <input type="hidden" name='{{theater}}' placeholder="Username" id="theater_l"  value='{{theater}}'  required >
+        <label for="Theater Name">    </label>
+        <select id="Theater"  onclick="ad_theater_list()" name="Theater">
+        <option hidden=""> Select Theater</option>
+        </select>
+        
+       
+        <input type="date" id="Dates" name="Dates">
+        
+
+        <input type="hidden" name='{{timing}}' placeholder="Username" id="timing_l"  value='{{timing}}'  required ><br>
+        
+        <select id="Timings" onclick="ad_timing_list()" name="timings">
+        <option hidden=""> Select Timings</option> 
+        </select>
+       <input type="submit" value="BOOK_MOVIE_NOW"></div>
+       <script>
+           var select_movie=document.getElementById("Movies");
+           var movie_list=document.getElementById("movie_l").getAttribute("name");
+           const movie_arr=movie_list.split(",")
+
+           var select_theater=document.getElementById('Theater');
+           var theater_list=document.getElementById("theater_l").getAttribute("name");
+           const theater_arr=theater_list.split(",")
+
+           var select_timing=document.getElementById('Timings');
+           var timing_list=document.getElementById("timing_l").getAttribute("name");
+           const timing_arr=timing_list.split(",");
+
+
+           
+           function ad_movie_list()
+           {
+               
+            if (select_movie.length<=1)
+            {
+            for (var i=0;i<movie_arr.length;i++)
+               
+               {
+                var movie_name=movie_arr[i];
+                
+                var el=document.createElement("option");
+                el.textContent=movie_name;
+                el.value=movie_name;
+                
+                $('#Movies').find(`[value="${movie_name}"]`).remove()
+                select_movie.appendChild(el);
+                
+
+           }   
+            }
+           }
+
+
+           function ad_theater_list()
+           {
+            selected_movie=select_movie.value
+            selected_timing=select_timing.value
+            
+            if(selected_movie=='Select Movie')
+            {
+                alert("please select the movie ")
+
+            }
+            else if (select_theater.length>1)
+            {
+                var length=select_theater.options.length;
+                for (var i=length-1;i>=0;i--)
+                {
+                        select_theater.options[i]=null;
+                }
+                ad_theater_list()
+            }
+            else
+            {
+                for (var i=0;i<movie_arr.length;i++)
+                {
+                    if(movie_arr[i]==selected_movie)
+                    {
+                        var theater_name=theater_arr[i];
+                        var el=document.createElement("option");
+                        el.textContent=theater_name;
+                        el.value=theater_name;
+                        $('#Theater').find(`[value="${theater_name}"]`).remove()
+                          {select_theater.appendChild(el)}
+                        
+                    }
+                }
+
+            } 
+           }
+
+           function ad_timing_list()
+           {
+            selected_movie=select_movie.value
+            selected_theater=select_theater.value
+           
+            if(selected_movie=='Select Movie')
+            {
+                alert("please select the movie and theater")
+
+            }
+            else if (select_timing.length>1)
+            {
+                var length=select_timing.options.length;
+                for (var i=length-1;i>=0;i--)
+                {
+                        select_timing.options[i]=null;
+                }
+                ad_timing_list()
+            }
+            else
+            {
+                if(selected_theater=='Select Theater')
+                {
+                    
+                for (var i=0;i<movie_arr.length;i++)
+                {
+                    if(movie_arr[i]==selected_movie)
+                    {
+                        var timing=timing_arr[i];
+                        var el=document.createElement("option");
+                        el.textContent=timing;
+                        el.value=timing;
+                        $('#Timings').find(`[value="${timing}"]`).remove()
+                        select_timing.appendChild(el)
+
+                        
+                    }
+                }
+
+
+                }
+                else{
+                for (var i=0;i<movie_arr.length;i++)
+                {
+                    
+                        if(movie_arr[i]==selected_movie && theater_arr[i]==selected_theater)
+                    
+                        {
+                            
+                        var timing=timing_arr[i];
+                        var el=document.createElement("option");
+                        el.textContent=timing;
+                        el.value=timing;
+                        $('#Timings').find(`[value="${timing}"]`).remove()
+                        select_timing.appendChild(el)
+                         }
+                }
+
+            }
+        }
+
+            
+           }
+
+
+
+           
+       </script>
+
+
+    </form>
+</div>
+
+</div>
+</body>
+</html>
