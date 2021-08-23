@@ -44,6 +44,9 @@ def login():
         username = request.form['email']
         password = request.form['password']
         # Check if account exists using MySQL
+        cursor.close()
+        cursor=database.cursor()
+        
         cursor.execute(f"create table if not exists user (user_id bigint,email_id varchar(50),user_name varchar(40),user_type varchar(30) ,password varchar(30),city varchar(30),state varchar(30), Primary key (user_id))")
         database.commit()
         cursor.execute(f"SELECT user_id,user_name,email_id,user_type FROM user WHERE email_id = '{username}' AND password = '{password}'")
@@ -74,7 +77,8 @@ def addmovies():
 
         if 'loggedin' in session:
         # We need all the account info for the user so we can display it on the profile page
-        
+          cursor.close()
+          cursor=database.cursor()
           cursor.execute(f"SELECT * FROM user WHERE user_id = {session['id']}")
           account = cursor.fetchone()
           return render_template('theater_login.html',account=account)
@@ -94,7 +98,8 @@ def n_movies():
       genre=request.form['genre']
       duration=request.form['duration']
       cost=request.form['cost']
-    
+      cursor.close()
+      cursor=database.cursor()
       cursor.execute('CREATE TABLE IF NOT EXISTS movies(movie_id BIGINT,theater_id bigint,movie_name varchar(30),theater_name varchar(30),seats bigint,booked_seats varchar(200),timings varchar(45),genre varchar(20),duration bigint,cost bigint,active_ind varchar(1), PRIMARY KEY(movie_id))')
       database.commit()
       cursor.execute(f"update movies set active_ind='0' where theater_id={session['id']}")
@@ -145,7 +150,8 @@ def register():
           # Form is empty... (no POST data)
           msg = 'Please fill out the form!'
     # Show registration form with message (if any)
-    
+      cursor.close()
+      cursor=database.cursor()
       email = request.form['email']
       cursor.execute(f"create table if not exists user (user_id bigint,email_id varchar(50),user_name varchar(40),user_type varchar(30) ,password varchar(30),city varchar(30),state varchar(30), Primary key (user_id))")
       database.commit()
@@ -181,6 +187,8 @@ def home():
       if 'loggedin' in session:
           user_id=session['id']
           print(session)
+          cursor.close()
+          cursor=database.cursor()
           cursor.execute(f"SELECT * FROM user WHERE user_id = {user_id}")
           account = cursor.fetchone()
         # Show the profile page with account info
@@ -226,7 +234,8 @@ def profile():
 
       if 'loggedin' in session:
         # We need all the account info for the user so we can display it on the profile page
-        
+          cursor.close()
+          cursor=database.cursor()
           cursor.execute(f"SELECT * FROM user WHERE user_id = {session['id']}")
           account = cursor.fetchone()
         # Show the profile page with account info
@@ -255,6 +264,8 @@ def t_dashboard():
     try:
       movie_name=''
       result=[]
+      cursor.close()
+      cursor=database.cursor()
       print(session['id'])
       cursor.execute('CREATE TABLE IF NOT EXISTS movies(movie_id BIGINT,theater_id bigint,movie_name varchar(30),theater_name varchar(30),seats bigint,booked_seats varchar(200),timings varchar(45),genre varchar(20),duration bigint,cost bigint,active_ind varchar(1), PRIMARY KEY(movie_id))')
       database.commit()
@@ -288,6 +299,8 @@ def t_dashboard():
 @app.route('/Find_Shows',methods=['GET','POST'])
 def find_shows():
     try:
+      cursor.close()
+      cursor=database.cursor()
 
       Theater=request.form.get("Theater")
       Movie=request.form.get("Movies")
@@ -317,6 +330,8 @@ def find_shows():
 @app.route('/user_dashboard',methods=['GET','POST'])
 def user_dashboard():
     try:
+      cursor.close()
+      cursor=database.cursor()  
       if 'theater_name' in request.form:
          theater_name=request.form.get('theater_name')
          movie_name=request.form.get('movie_name')
