@@ -1,14 +1,19 @@
-	
+
+
+
+
+
+
 from logging import exception
 from flask import Flask, render_template, request, redirect, url_for, session,json,flash
 import re
-import sqlite3
+import sqlite3#mysql.connector
 from datetime import datetime as dt
 
 
 app = Flask(__name__)
-database=sqlite3.connect('movie_finder.db')
-cursor=database.cursor()
+database=sqlite3.connect('movie_finder.db')#mysql.connector.connect(host='localhost',user='root',passwd='12345',database='movie_finder')
+cursor=database.cursor()#(buffered=True)
 app.secret_key = 'my_secret'
 
 @app.route("/")
@@ -37,12 +42,12 @@ def showSignIn():
 def login():
     try:
       msg = ''
-      #  if "username" and "password" POST requests exist (user submitted form)
+      # Check if "username" and "password" POST requests exist (user submitted form)
       if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
         # Create variables for easy access
         username = request.form['email']
         password = request.form['password']
-        #  if account exists using MySQL
+        # Check if account exists using MySQL
         cursor.execute(f"create table if not exists user (user_id bigint auto_increment,email_id varchar(50),user_name varchar(40),user_type varchar(30) ,password varchar(30),city varchar(30),state varchar(30), Primary key (user_id))")
         database.commit()
         cursor.execute(f"SELECT user_id,user_name,email_id,user_type FROM user WHERE email_id = '{username}' AND password = '{password}'")
@@ -74,7 +79,7 @@ def addmovies():
         if 'loggedin' in session:
         # We need all the account info for the user so we can display it on the profile page
         
-          cursor.execute('SELECT * FROM user WHERE user_id = %s', (session['id'],))
+          cursor.execute(f"SELECT * FROM user WHERE user_id = {session['id']}")
           account = cursor.fetchone()
           return render_template('theater_login.html',account=account)
 
@@ -127,7 +132,7 @@ def register():
     try:
     # Output message if something goes wrong...
       msg = ''
-    #  if "username", "password" and "email" POST requests exist (user submitted form)
+    # Check if "username", "password" and "email" POST requests exist (user submitted form)
       if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
           # Create variables for easy access
           username = request.form['username']
@@ -142,7 +147,7 @@ def register():
     # Show registration form with message (if any)
     
       email = request.form['email']
-      cursor.execute('SELECT * FROM user WHERE email_id = %s', (email,))
+      cursor.execute(f"SELECT * FROM user WHERE email_id = '{email}'")
       account = cursor.fetchone()
         # If account exists show error and validation checks
       if account:
@@ -167,7 +172,7 @@ def register():
 @app.route('/home')
 def home():
     try:
-    #  if user is loggedin
+    # Check if user is loggedin
       if 'loggedin' in session:
           user_id=session['id']
         
@@ -217,7 +222,7 @@ def profile():
       if 'loggedin' in session:
         # We need all the account info for the user so we can display it on the profile page
         
-          cursor.execute('SELECT * FROM user WHERE user_id = %s', (session['id'],))
+          cursor.execute(f"SELECT * FROM user WHERE user_id = {session['id']}")
           account = cursor.fetchone()
         # Show the profile page with account info
        
