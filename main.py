@@ -1,19 +1,14 @@
 
-
-
-
-
-
 from logging import exception
 from flask import Flask, render_template, request, redirect, url_for, session,json,flash
 import re
-import mysql.connector
+import sqlite3#mysql.connector
 from datetime import datetime as dt
 
 
 app = Flask(__name__)
-database=mysql.connector.connect(host='localhost',user='root',passwd='12345',database='movie_finder')
-cursor=database.cursor(buffered=True)
+database=sqlite3.connect('movie_finder.db')#mysql.connector.connect(host='localhost',user='root',passwd='12345',database='movie_finder')
+cursor=database.cursor()#(buffered=True)
 app.secret_key = 'my_secret'
 
 @app.route("/")
@@ -59,8 +54,7 @@ def login():
             session['loggedin'] = True
             session['id'] = account[0]
             session['username'] = account[1]
-            session['email']=account[2]
-            session['user_type']=account[3]
+            session['user_type']=account[2]
             # Redirect to home page
             
             return redirect('/home')
@@ -176,7 +170,7 @@ def home():
     # Check if user is loggedin
       if 'loggedin' in session:
           user_id=session['id']
-        
+          print(session)
           cursor.execute(f"SELECT * FROM user WHERE user_id = {user_id}")
           account = cursor.fetchone()
         # Show the profile page with account info
