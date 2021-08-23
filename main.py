@@ -7,7 +7,7 @@ from datetime import datetime as dt
 
 
 app = Flask(__name__)
-database=sqlite3.connect('movie_finder.db')#mysql.connector.connect(host='localhost',user='root',passwd='12345',database='movie_finder')
+database=sqlite3.connect('movie_finder.db',timeout=10)#mysql.connector.connect(host='localhost',user='root',passwd='12345',database='movie_finder')
 cursor=database.cursor()#(buffered=True)
 app.secret_key = 'my_secret'
 
