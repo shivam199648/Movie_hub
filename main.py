@@ -1,9 +1,4 @@
 
-
-
-
-
-
 from logging import exception
 from flask import Flask, render_template, request, redirect, url_for, session,json,flash
 import re
@@ -175,7 +170,7 @@ def home():
     # Check if user is loggedin
       if 'loggedin' in session:
           user_id=session['id']
-        
+          print(session)
           cursor.execute(f"SELECT * FROM user WHERE user_id = {user_id}")
           account = cursor.fetchone()
         # Show the profile page with account info
