@@ -18,10 +18,6 @@ def main():
     except Exception as e:
         raise e
 
-    finally:
-        cursor.close()
-        database.close()
-    
 
 
 @app.route('/showSignUp')
@@ -380,3 +376,8 @@ def user_dashboard():
 if __name__ == "__main__":
     app.run()
     
+
+
+
+cursor.close()
+database.close()
