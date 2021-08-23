@@ -1,14 +1,19 @@
 
+
+
+
+
+
 from logging import exception
 from flask import Flask, render_template, request, redirect, url_for, session,json,flash
 import re
-import sqlite3#mysql.connector
+import mysql.connector
 from datetime import datetime as dt
 
 
 app = Flask(__name__)
-database=sqlite3.connect('movie_finder.db')#mysql.connector.connect(host='localhost',user='root',passwd='12345',database='movie_finder')
-cursor=database.cursor()#(buffered=True)
+database=mysql.connector.connect(host='localhost',user='root',passwd='12345',database='movie_finder')
+cursor=database.cursor(buffered=True)
 app.secret_key = 'my_secret'
 
 @app.route("/")
@@ -43,7 +48,7 @@ def login():
         username = request.form['email']
         password = request.form['password']
         # Check if account exists using MySQL
-        cursor.execute(f"create table if not exists user (user_id bigint auto_increment,email_id varchar(50),user_name varchar(40),user_type varchar(30) ,password varchar(30),city varchar(30),state varchar(30), Primary key (user_id))")
+        cursor.execute(f"create table if not exists user (user_id bigint AUTOINCREMENT,email_id varchar(50),user_name varchar(40),user_type varchar(30) ,password varchar(30),city varchar(30),state varchar(30), Primary key (user_id))")
         database.commit()
         cursor.execute(f"SELECT user_id,user_name,email_id,user_type FROM user WHERE email_id = '{username}' AND password = '{password}'")
         # Fetch one record and return result
@@ -54,7 +59,8 @@ def login():
             session['loggedin'] = True
             session['id'] = account[0]
             session['username'] = account[1]
-            session['user_type']=account[2]
+            session['email']=account[2]
+            session['user_type']=account[3]
             # Redirect to home page
             
             return redirect('/home')
@@ -94,7 +100,7 @@ def n_movies():
       duration=request.form['duration']
       cost=request.form['cost']
     
-      cursor.execute('CREATE TABLE IF NOT EXISTS movies(movie_id BIGINT AUTO_INCREMENT,theater_id bigint,movie_name varchar(30),theater_name varchar(30),seats bigint,booked_seats varchar(200),timings varchar(45),genre varchar(20),duration bigint,cost bigint,active_ind varchar(1), PRIMARY KEY(movie_id))')
+      cursor.execute('CREATE TABLE IF NOT EXISTS movies(movie_id BIGINT AUTOINCREMENT,theater_id bigint,movie_name varchar(30),theater_name varchar(30),seats bigint,booked_seats varchar(200),timings varchar(45),genre varchar(20),duration bigint,cost bigint,active_ind varchar(1), PRIMARY KEY(movie_id))')
       database.commit()
       cursor.execute(f"update movies set active_ind='0' where theater_id={session['id']}")
       for values in timings:
@@ -104,7 +110,7 @@ def n_movies():
       cursor.execute(f"select theater_id,theater_name,movie_name,sum(booked_seats) as total_seats,cost from movies where theater_id='{session['id']}' and active_ind='1' group by theater_id,theater_name,cost")
       result=cursor.fetchone()
       movie_name=result[2]
-      cursor.execute(f"Create table if not exists bookings(booking_id BIGINT AUTO_INCREMENT,user_id BIGINT,theater_id bigint,movie_id bigint,seats_booked bigint,total_cost bigint,movie_schedule datetime,booking_time datetime default CURRENT_TIMESTAMP,PRIMARY KEY(booking_id))")
+      cursor.execute(f"Create table if not exists bookings(booking_id BIGINT AUTOINCREMENT,user_id BIGINT,theater_id bigint,movie_id bigint,seats_booked bigint,total_cost bigint,movie_schedule datetime,booking_time datetime default CURRENT_TIMESTAMP,PRIMARY KEY(booking_id))")
       database.commit()
       cursor.execute(f"select sum(total_cost),sum(seats_booked) from bookings where movie_id in (select movie_id from movies where theater_id={session['id']} and movie_name='{movie_name}')")
     
@@ -155,7 +161,7 @@ def register():
               msg = 'Please fill out the form!'
       else:
             # Account doesnt exists and the form data is valid, now insert new account into accounts table
-              cursor.execute(f"create table if not exists user (user_id bigint auto_increment,email_id varchar(50),user_name varchar(40),user_type varchar(30) ,password varchar(30),city varchar(30),state varchar(30), Primary key (user_id))")
+              cursor.execute(f"create table if not exists user (user_id bigint AUTOINCREMENT,email_id varchar(50),user_name varchar(40),user_type varchar(30) ,password varchar(30),city varchar(30),state varchar(30), Primary key (user_id))")
               cursor.execute(f''' insert into user(user_name,email_id,password,user_type,city,state)values( '{username}','{email}','{password}','{user_type}','{city}','{state}');''')
               database.commit()
               msg = 'You have successfully registered! Please login Now'
@@ -170,7 +176,7 @@ def home():
     # Check if user is loggedin
       if 'loggedin' in session:
           user_id=session['id']
-          print(session)
+        
           cursor.execute(f"SELECT * FROM user WHERE user_id = {user_id}")
           account = cursor.fetchone()
         # Show the profile page with account info
@@ -180,7 +186,7 @@ def home():
               return render_template('theater_login.html',account=account)
           # User is loggedin show them the home page
           else:
-             cursor.execute('CREATE TABLE IF NOT EXISTS movies(movie_id BIGINT AUTO_INCREMENT,theater_id bigint,movie_name varchar(30),theater_name varchar(30),seats bigint,booked_seats varchar(200),timings varchar(45),genre varchar(20),duration bigint,cost bigint,active_ind varchar(1), PRIMARY KEY(movie_id))')
+             cursor.execute('CREATE TABLE IF NOT EXISTS movies(movie_id BIGINT AUTOINCREMENT,theater_id bigint,movie_name varchar(30),theater_name varchar(30),seats bigint,booked_seats varchar(200),timings varchar(45),genre varchar(20),duration bigint,cost bigint,active_ind varchar(1), PRIMARY KEY(movie_id))')
              database.commit()
              cursor.execute(f'''select * from (select cast(movie_id as char) as movie_id,movie_name,timings,cast(concat(current_date,' ',timings) as datetime) as sp ,theater_name
              from  movies where active_ind='1' and theater_id in (select user_id from user where city in 
@@ -282,7 +288,7 @@ def find_shows():
       cursor.execute(f"select theater_id,theater_name,movie_id,movie_name,booked_seats,seats,genre,cost,duration from movies where movie_name='{Movie}' and theater_name='{Theater}' and timings='{Timings}' and active_ind='1'")
       movie_info=cursor.fetchone()
       print(booking_datetime)
-      cursor.execute(f"Create table if not exists bookings(booking_id BIGINT AUTO_INCREMENT,user_id BIGINT,theater_id bigint,movie_id bigint,seats_booked bigint,total_cost bigint,movie_schedule datetime,booking_time datetime default CURRENT_TIMESTAMP,PRIMARY KEY(booking_id))")
+      cursor.execute(f"Create table if not exists bookings(booking_id BIGINT AUTOINCREMENT,user_id BIGINT,theater_id bigint,movie_id bigint,seats_booked bigint,total_cost bigint,movie_schedule datetime,booking_time datetime default CURRENT_TIMESTAMP,PRIMARY KEY(booking_id))")
       cursor.execute(f"select sum(seats_booked) from bookings where movie_id={movie_info[2]} and movie_schedule='{booking_datetime}'")
       database.commit()
       booked_seats=0
@@ -313,11 +319,11 @@ def user_dashboard():
          movie_theater=cursor.fetchone()
          movie_id=movie_theater[0]
          theater_id=movie_theater[1]
-         cursor.execute(f"Create table if not exists bookings(booking_id BIGINT AUTO_INCREMENT,user_id BIGINT,theater_id bigint,movie_id bigint,seats_booked bigint,total_cost bigint,movie_schedule datetime,booking_time datetime default CURRENT_TIMESTAMP,PRIMARY KEY(booking_id))")
+         cursor.execute(f"Create table if not exists bookings(booking_id BIGINT AUTOINCREMENT,user_id BIGINT,theater_id bigint,movie_id bigint,seats_booked bigint,total_cost bigint,movie_schedule datetime,booking_time datetime default CURRENT_TIMESTAMP,PRIMARY KEY(booking_id))")
 
          cursor.execute(f"Insert into bookings(user_id,theater_id,movie_id,seats_booked,total_cost,movie_schedule) values ({user_id},{theater_id},{movie_id},{selected_seats},{total_cost},'{timings}')")
       
-      cursor.execute(f"Create table if not exists bookings(booking_id BIGINT AUTO_INCREMENT,user_id BIGINT,theater_id bigint,movie_id bigint,seats_booked bigint,total_cost bigint,movie_schedule datetime,booking_time datetime default CURRENT_TIMESTAMP,PRIMARY KEY(booking_id))")
+      cursor.execute(f"Create table if not exists bookings(booking_id BIGINT AUTOINCREMENT,user_id BIGINT,theater_id bigint,movie_id bigint,seats_booked bigint,total_cost bigint,movie_schedule datetime,booking_time datetime default CURRENT_TIMESTAMP,PRIMARY KEY(booking_id))")
       database.commit()
       cursor.execute(f"select distinct booking_id,movie_name,theater_name,movie_schedule,seats_booked,total_cost from bookings inner join movies on bookings.movie_id=movies.movie_id where user_id={session['id']}")
       user_bookings=cursor.fetchall()
