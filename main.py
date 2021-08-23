@@ -18,6 +18,11 @@ def main():
     except Exception as e:
         raise e
 
+    finally:
+        cursor.close()
+        database.close()
+    
+
 
 @app.route('/showSignUp')
 def showSignUp():
@@ -243,6 +248,7 @@ def logout():
       session.pop('loggedin', None)
       session.pop('id', None)
       session.pop('username', None)
+      session.pop('email',None)
    # Redirect to login page
       return redirect('/signIn')
     except Exception as e:
@@ -253,13 +259,14 @@ def t_dashboard():
     try:
       movie_name=''
       result=[]
+      print(session['id'])
       cursor.execute('CREATE TABLE IF NOT EXISTS movies(movie_id BIGINT,theater_id bigint,movie_name varchar(30),theater_name varchar(30),seats bigint,booked_seats varchar(200),timings varchar(45),genre varchar(20),duration bigint,cost bigint,active_ind varchar(1), PRIMARY KEY(movie_id))')
       database.commit()
-      cursor.execute(f"select theater_id,theater_name,movie_name,sum(booked_seats) as total_seats,cost from movies where theater_id='{session['id']}' and active_ind='1' group by theater_id,theater_name,cost")
+      cursor.execute(f"select theater_id,theater_name,movie_name,sum(booked_seats) as total_seats,cost from movies where theater_id={session['id']} and active_ind='1' group by theater_id,theater_name,cost")
       if cursor.rowcount>0:
-        result=cursor.fetchone()
+         result=cursor.fetchone()
     
-        movie_name=result[2]
+         movie_name=result[2]
       cursor.execute(f"Create table if not exists bookings(booking_id BIGINT,user_id BIGINT,theater_id bigint,movie_id bigint,seats_booked bigint,total_cost bigint,movie_schedule datetime,booking_time datetime default CURRENT_TIMESTAMP,PRIMARY KEY(booking_id))")
       database.commit()
       cursor.execute(f"select sum(total_cost),sum(seats_booked) from bookings where movie_id in (select movie_id from movies where theater_id={session['id']} and movie_name='{movie_name}')")
