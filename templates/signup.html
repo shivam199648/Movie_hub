@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title> Movie Hub</title>
+
+     
+
+    
+    <link href="../static/signup.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+    <script src="../static/js/JQuery.js"></script>
+    <script>
+      function welcome()
+      {
+        
+        var message=document.getElementById("message").getAttribute("name");
+        if (message!='')
+        alert(message)
+      }
+    </script>
+
+
+  </head>
+ 
+  <body onload="welcome()">
+    <nav class="navtop">
+			<div>
+				<h1>Movie Hub</h1>
+        <a href="#"><i class="fas fa-home"></i>Home</a>
+				<a href="#"><i class="fas fa-user-circle"></i>Profile</a>
+				<a href="#"><i class="fas fa-sign-out-alt"></i>Logout</a>
+                
+			</div>
+		</nav>
+    <input type="hidden" name='{{msg}}' id="message"  value='{{msg}}'  required >
+    <div class="register">
+			<h1>Register</h1>
+			<div class="links">
+				<a href="/signIn">Login</a>
+				<a href="/showSignUp" class="active">Register</a>
+			</div>
+			<form action="/signUp" method="post" autocomplete="off">
+				<label for="username">
+					<i class="fas fa-user"></i>
+				</label>
+				<input type="text" name="username" placeholder="Username/Theater Name" id="username" required>
+				<label for="password">
+					<i class="fas fa-lock"></i>
+				</label>
+				<input type="password" name="password" placeholder="Password" id="password" required>
+				<label for="email">
+					<i class="fas fa-envelope"></i>
+				</label>
+				<input type="email" name="email" placeholder="Email" id="email" required>
+				
+        <label for="city"></label>
+        <input type="text" name="city" placeholder="City" id="city" required>
+				
+        <label for="state"></label>
+        <input type="text" name="state" placeholder="State" id="state" required>
+				
+        <input type="radio" name="user_type" id="btn1" value="User">
+        <label for="User">User</label><br>
+        <input type="radio" name="user_type" id="btn2" value="Theater">
+        <label for="Theater">Theater</label><br>
+
+				<input type="submit" value="signUp">
+
+        
+			</form>
+		</div>
+  </body>
+</html>
