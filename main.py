@@ -146,6 +146,8 @@ def register():
     # Show registration form with message (if any)
     
       email = request.form['email']
+      cursor.execute(f"create table if not exists user (user_id bigint,email_id varchar(50),user_name varchar(40),user_type varchar(30) ,password varchar(30),city varchar(30),state varchar(30), Primary key (user_id))")
+      database.commit()
       cursor.execute(f"SELECT * FROM user WHERE email_id = '{email}'")
       account = cursor.fetchone()
         # If account exists show error and validation checks
